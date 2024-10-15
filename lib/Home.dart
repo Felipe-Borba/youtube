@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youtube/CustomSearchDelegate.dart';
 import 'package:youtube/telas/Biblioteca.dart';
 import 'package:youtube/telas/EmAlta.dart';
 import 'package:youtube/telas/Inicio.dart';
@@ -12,14 +13,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   int _indiceAtual = 0;
+  String _resultado = "";
 
   @override
   Widget build(BuildContext context) {
-
     List<Widget> telas = [
-      Inicio(),
+      Inicio(_resultado),
       EmAlta(),
       Inscricao(),
       Biblioteca()
@@ -27,69 +27,77 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.grey
-        ),
+        iconTheme: const IconThemeData(color: Colors.grey),
         backgroundColor: Colors.white,
         title: Image.asset(
-            "assets/images/youtube.png",
+          "assets/images/youtube.png",
           width: 98,
           height: 22,
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.videocam),
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              String? res = await showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(),
+              );
+
+              setState(() {
+                _resultado = res ?? "";
+              });
+              print("resultado: digitado $res");
+            },
+          ),
+
+          /*
+          IconButton(
+            icon: Icon(Icons.videocam),
             onPressed: (){
               print("acao: videocam");
             },
           ),
+
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: (){
-              print("acao: pesquisa");
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle),
             onPressed: (){
               print("acao: conta");
             },
           )
+          */
         ],
       ),
-      body: telas[_indiceAtual],
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        child: telas[_indiceAtual],
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _indiceAtual,
-        onTap: (indice){
-          setState(() {
-            _indiceAtual = indice;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        fixedColor: Colors.red,
+          currentIndex: _indiceAtual,
+          onTap: (indice) {
+            setState(() {
+              _indiceAtual = indice;
+            });
+          },
+          type: BottomNavigationBarType.fixed,
+          fixedColor: Colors.red,
           items: const [
             BottomNavigationBarItem(
-              //backgroundColor: Colors.orange,
-              label: "Início",
-              icon: Icon(Icons.home)
-            ),
+                //backgroundColor: Colors.orange,
+                label: "Início",
+                icon: Icon(Icons.home)),
             BottomNavigationBarItem(
                 //backgroundColor: Colors.red,
                 label: "Em alta",
-                icon: Icon(Icons.whatshot)
-            ),
+                icon: Icon(Icons.whatshot)),
             BottomNavigationBarItem(
                 //backgroundColor: Colors.blue,
                 label: "Inscrições",
-                icon: Icon(Icons.subscriptions)
-            ),
+                icon: Icon(Icons.subscriptions)),
             BottomNavigationBarItem(
                 //backgroundColor: Colors.green,
                 label: "Biblioteca",
-                icon: Icon(Icons.folder)
-            ),
-          ]
-      ),
+                icon: Icon(Icons.folder)),
+          ]),
     );
   }
 }
